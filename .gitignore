@@ -1,0 +1,19 @@
+# User-uploaded content (large binary files, not code)
+wp-content/uploads/
+
+# Local environment overrides
+.env
+.env.local
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Build artifacts
+node_modules/
