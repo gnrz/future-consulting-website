@@ -1,7 +1,7 @@
 # User-uploaded content (large binary files, not code)
 wp-content/uploads/
 
-# Local environment overrides
+# Local environment — never commit real credentials
 .env
 .env.local
 
