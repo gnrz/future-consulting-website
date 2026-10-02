@@ -32,6 +32,7 @@ fi
 # 3d. Start
 docker compose up -d
 chmod +x backup.sh
-( crontab -l 2>/dev/null; echo "15 3 * * * /opt/jackgannaway/backup.sh >> /var/log/site-backup.log 2>&1" ) | sort -u | crontab -
+# "|| true": a fresh Droplet has no crontab yet, and set -e would stop here
+{ crontab -l 2>/dev/null || true; echo "15 3 * * * /opt/jackgannaway/backup.sh >> /var/log/site-backup.log 2>&1"; } | sort -u | crontab -
 
 echo "jackgannaway setup finished"
