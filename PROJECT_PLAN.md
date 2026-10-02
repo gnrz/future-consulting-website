@@ -1,42 +1,38 @@
-# WordPress Business Site - Project Plan
+# jackgannaway.com: Project Plan
 
 ## Goal
-Set up a WordPress site to host content for the business.
+Personal site with a simple CMS: a few static pages and a blog.
+
+| Page | Content |
+|---|---|
+| Home | Intro |
+| Projects | Links to Wage Wizard and Datum |
+| Consulting | Future Consulting info (futureconsulting.nl redirects here) |
+| Blog | Personal blog (WordPress posts) |
 
 ## Infrastructure
-- **Hosting:** Digital Ocean App Platform
-- **Source:** GitHub repository (to be created)
-- **CMS:** WordPress
+- **Hosting:** one DigitalOcean Droplet, $6/mo (1 GB), weekly backups
+- **Stack:** Docker Compose. Official `wordpress` image + MariaDB + Caddy (HTTPS)
+- **This repo holds the server setup only.** WordPress itself, themes,
+  plugins and uploads live in Docker volumes on the Droplet, so updates and
+  plugin installs from wp-admin persist.
+- **Database:** inside the compose stack, no public port.
 
-## WordPress Structure
-- Option A: Full WP install committed to repo
-- Dockerfile-based deployment (PHP + Apache)
-- wp-config.php uses environment variables — safe to commit, no secrets in repo
+## Why not App Platform
+App Platform's filesystem is wiped on every redeploy, so uploads and
+plugins installed from wp-admin would disappear, and WordPress needs managed
+MySQL there ($15/mo). A Droplet is ~$7/mo all in and behaves like normal WordPress.
 
 ## Status
-- [ ] Clarify requirements
-- [x] Clarify requirements
-- [ ] Create GitHub repository
-- [ ] Set up WordPress codebase
-- [ ] Configure Digital Ocean App Platform
-- [ ] Deploy and test
+- [x] Requirements
+- [x] Server setup in repo (compose, Caddyfile, backup script)
+- [ ] Create Droplet: see SETUP.md step 1
+- [ ] DNS for jackgannaway.com and futureconsulting.nl: step 2
+- [ ] Install and create pages: steps 3 to 5
+- [ ] Backups: step 6
 
-## Database
-- **Reuse existing DO Managed DB**
-- Host: `152.42.135.76:3306`
-- Schema: `wordpress`
-- Username: `wordpress`
-- Password: stored as DO App Platform environment variable (never committed to repo)
-
-## Domain
-- `futureconsulting.nl` (DNS not yet configured)
-
-## Repo
-- GitHub org: `gnrz`
-- Repo name: `future-consulting-website`
-- Visibility: Public
-
-## Notes
-- Code is source for DO App Platform deployment
-- Credentials injected via environment variables at runtime — never hardcoded in repo
-- **Change DB password after initial setup** (was shared in plain text during planning)
+## Follow-up
+- The earlier plan pointed at a MySQL server on a public IP (port 3306) and
+  noted its password had been shared in plain text. This site no longer
+  uses it. **Decide what that server is still for**; if nothing, delete it.
+  If something, firewall port 3306 and rotate the password.

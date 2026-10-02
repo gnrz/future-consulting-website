@@ -1,0 +1,17 @@
+# Caddy obtains and renews HTTPS certificates for every name below
+# automatically, once DNS points each one at this Droplet.
+
+jackgannaway.com {
+	encode zstd gzip
+	reverse_proxy wordpress:80
+}
+
+www.jackgannaway.com {
+	redir https://jackgannaway.com{uri} permanent
+}
+
+# Future Consulting no longer has its own site: every path lands on the
+# consulting page.
+futureconsulting.nl, www.futureconsulting.nl {
+	redir https://jackgannaway.com/consulting/ permanent
+}

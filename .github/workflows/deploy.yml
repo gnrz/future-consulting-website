@@ -1,8 +1,13 @@
 name: Deploy to Droplet
 
+# Needs repository secrets DROPLET_HOST and DROPLET_SSH_KEY.
+# Content (pages, posts, plugins) is edited in wp-admin, not deployed from
+# here; this only ships changes to the server setup in this repo.
+
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -15,6 +20,10 @@ jobs:
           username: root
           key: ${{ secrets.DROPLET_SSH_KEY }}
           script: |
-            cd /var/www/future-consulting-website
-            git pull origin main
-            docker compose up --build -d
+            set -e
+            cd /opt/jackgannaway
+            git pull --ff-only origin main
+            docker compose pull
+            docker compose up -d --remove-orphans
+            docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile
+            docker compose ps
