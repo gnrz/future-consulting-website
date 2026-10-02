@@ -15,6 +15,9 @@ In DigitalOcean → **Create → Droplets**:
 - **Authentication:** your SSH key
 - **Backups:** turn on weekly backups (+$1.20/mo)
 - **Hostname:** `jackgannaway`
+- **Advanced options → Add initialization scripts:** paste the whole of
+  `cloud-init.sh` from this repo. It does Step 3 for you on first boot,
+  so you can **skip Step 3**. Allow 3–5 minutes after the Droplet appears.
 
 ✅ **Done when:** the Droplet shows an IP address. Write it down.
 
@@ -39,7 +42,11 @@ Droplet IP. Can take minutes to a few hours.
 
 ---
 
-## Step 3: Install the site (10 min)
+## Step 3: Install the site (10 min). Skip if you used cloud-init.sh
+
+> Used `cloud-init.sh`? Check it finished:
+> `ssh root@DROPLET_IP tail -3 /var/log/cloud-init-output.log` should show
+> `jackgannaway setup finished`. Then go to Step 4.
 
 SSH in: `ssh root@DROPLET_IP`, then paste these one block at a time.
 
