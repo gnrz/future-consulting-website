@@ -1,19 +1,11 @@
-# User-uploaded content (large binary files, not code)
-wp-content/uploads/
-
-# Local environment — never commit real credentials
+# Real credentials live only on the Droplet
 .env
 .env.local
 
-# OS junk
+# OS / editor junk
 .DS_Store
 Thumbs.db
-
-# Editor files
 .idea/
 .vscode/
 *.swp
 *.swo
-
-# Build artifacts
-node_modules/

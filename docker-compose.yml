@@ -1,8 +1,61 @@
+# jackgannaway.com: WordPress + MariaDB + Caddy on one Droplet.
+#
+# WordPress core, themes, plugins and uploads live in the `wordpress` volume,
+# not in this repo, so updates and plugin installs from wp-admin persist.
+# Nothing but Caddy is reachable from the internet: the database has no
+# published port.
+
 services:
+  db:
+    image: mariadb:11
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?set DB_ROOT_PASSWORD in .env}
+    # Sized for a 1 GB Droplet.
+    command: --innodb-buffer-pool-size=128M --max-connections=30
+    volumes:
+      - db:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
   wordpress:
-    build: .
+    image: wordpress:6-php8.3-apache
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD}
+      # Keys and salts are generated randomly on first start when unset.
+    volumes:
+      - wordpress:/var/www/html
+      - ./php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - wordpress
     ports:
       - "80:80"
-    env_file:
-      - .env
-    restart: unless-stopped
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  db:
+  wordpress:
+  caddy_data:
+  caddy_config:
